@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { useConsulta } from "../hooks/useConsulta";
 import { obtenerLibrosPorCategoria } from "../services/libreriaService";
 import Cargando from "./Cargando";
@@ -6,7 +7,9 @@ import PanelPruebas from "./PanelPruebas";
 import TarjetaLibro from "./TarjetaLibro";
 
 export default function ListaLibros({ slug }) {
-    const { datos, cargando, error, recargar } = useConsulta(obtenerLibrosPorCategoria, slug);
+    // useCallback mantiene la misma función mientras no cambie la categoría
+    const consultarLibros = useCallback(({ signal }) => obtenerLibrosPorCategoria(slug, { signal }), [slug]);
+    const { datos, cargando, error, recargar } = useConsulta(`libros:${slug}`, consultarLibros);
 
     const libros = datos?.libros ?? [];
 
@@ -15,7 +18,12 @@ export default function ListaLibros({ slug }) {
             <h1 className="text-3xl font-bold text-slate-900">{datos?.categoria.nombre ?? "Categoría"}</h1>
             {datos && <p className="mt-1 text-slate-600">{datos.categoria.descripcion}</p>}
 
-            <PanelPruebas cargando={cargando} onRecargar={recargar} />
+            <PanelPruebas
+                ruta="/api/categorias/:slug/libros"
+                cargando={cargando}
+                onRecargar={recargar}
+                etiquetaActualizar="Actualizar libros"
+            />
 
             {cargando && <Cargando mensaje="Cargando libros..." />}
 
