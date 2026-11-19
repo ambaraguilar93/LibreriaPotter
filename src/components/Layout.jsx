@@ -10,7 +10,8 @@ function estiloEnlace({ isActive }) {
 
 export default function Layout() {
     // Las categorías se consultan una sola vez aquí y se comparten con las páginas
-    const consultaCategorias = useConsulta(obtenerCategorias);
+    const consultaCategorias = useConsulta("categorias", obtenerCategorias);
+    const { cargando, error, recargar } = consultaCategorias;
     const categorias = consultaCategorias.datos ?? [];
 
     return (
@@ -30,9 +31,25 @@ export default function Layout() {
                             </NavLink>
                         ))}
 
-                        {consultaCategorias.cargando && (
+                        {cargando && (
                             <span role="status" className="text-sm text-slate-500">
                                 Cargando categorías...
+                            </span>
+                        )}
+
+                        {/* Si falla la consulta, el menú avisa y permite recargar en lugar de quedar vacío */}
+                        {error && (
+                            <span role="alert" className="flex items-center gap-2 text-sm text-red-700">
+                                {categorias.length > 0
+                                    ? "No se pudo actualizar el menú."
+                                    : "No se pudieron cargar las categorías."}
+                                <button
+                                    type="button"
+                                    onClick={() => recargar()}
+                                    className="cursor-pointer rounded-md border border-red-300 px-2 py-1 font-medium hover:bg-red-50"
+                                >
+                                    Recargar menú
+                                </button>
                             </span>
                         )}
                     </nav>

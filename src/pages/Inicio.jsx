@@ -1,6 +1,7 @@
 import { Link, useOutletContext } from "react-router";
 import Cargando from "../components/Cargando";
 import MensajeError from "../components/MensajeError";
+import PanelPruebas from "../components/PanelPruebas";
 
 export default function Inicio() {
     // Usa la misma consulta de categorías que hizo el Layout (no se repite la petición)
@@ -11,6 +12,13 @@ export default function Inicio() {
         <section>
             <h1 className="text-3xl font-bold text-slate-900">Explora nuestras categorías</h1>
             <p className="mt-1 text-slate-600">Elige una categoría para ver los libros disponibles.</p>
+
+            <PanelPruebas
+                ruta="/api/categorias"
+                cargando={cargando}
+                onRecargar={recargar}
+                etiquetaActualizar="Actualizar categorías"
+            />
 
             {cargando && <Cargando mensaje="Cargando categorías..." />}
 
